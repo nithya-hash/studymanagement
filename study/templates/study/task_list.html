@@ -1,0 +1,39 @@
+{% extends 'study/base.html' %}
+{% block title %}Tasks{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Tasks</h1>
+  <a href="{% url 'task_add' %}" class="btn">+ Add task</a>
+</div>
+
+<div class="filters">
+  <a href="{% url 'task_list' %}" class="{% if not current %}active{% endif %}">All</a>
+  <a href="?status=pending" class="{% if current == 'pending' %}active{% endif %}">Pending</a>
+  <a href="?status=in_progress" class="{% if current == 'in_progress' %}active{% endif %}">In progress</a>
+  <a href="?status=completed" class="{% if current == 'completed' %}active{% endif %}">Completed</a>
+</div>
+
+<div class="card">
+<table>
+  <tr><th>Title</th><th>Subject</th><th>Due</th><th>Status</th><th>Actions</th></tr>
+  {% for task in tasks %}
+  <tr>
+    <td>{{ task.title }}{% if task.description %}<br><small class="muted">{{ task.description }}</small>{% endif %}</td>
+    <td>{{ task.subject.name }}</td>
+    <td>{{ task.due_date|date:"d M Y" }}</td>
+    <td><span class="badge {{ task.status }}">{{ task.get_status_display }}</span></td>
+    <td>
+      <form method="post" action="{% url 'task_toggle' task.pk %}" class="inline">
+        {% csrf_token %}
+        <button type="submit" class="link-btn">{% if task.status == 'completed' %}Reopen{% else %}Mark done{% endif %}</button>
+      </form> |
+      <a href="{% url 'task_edit' task.pk %}">Edit</a> |
+      <a href="{% url 'task_delete' task.pk %}" class="danger-link">Delete</a>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="5" class="muted">No tasks found.</td></tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}

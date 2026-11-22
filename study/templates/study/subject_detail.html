@@ -1,0 +1,45 @@
+{% extends 'study/base.html' %}
+{% block title %}{{ subject.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ subject.name }} <small class="muted">{{ subject.code }}</small></h1>
+  <a href="{% url 'subject_list' %}" class="btn secondary">Back</a>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>Notes</h3>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn">Add note</button>
+    </form>
+    <hr>
+    {% for note in notes %}
+      <div class="note">
+        <strong>{{ note.title }}</strong> <small class="muted">{{ note.created_at|date:"d M Y" }}</small>
+        <p>{{ note.content|linebreaksbr }}</p>
+        <form method="post" action="{% url 'note_delete' note.pk %}" class="inline">
+          {% csrf_token %}
+          <button type="submit" class="link-btn danger-link">Delete</button>
+        </form>
+      </div>
+    {% empty %}
+      <p class="muted">No notes yet.</p>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h3>Tasks</h3>
+    {% for task in tasks %}
+      <p>
+        <strong>{{ task.title }}</strong>
+        <span class="badge {{ task.status }}">{{ task.get_status_display }}</span><br>
+        <span class="muted">Due {{ task.due_date|date:"d M Y" }}</span>
+      </p>
+    {% empty %}
+      <p class="muted">No tasks for this subject.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

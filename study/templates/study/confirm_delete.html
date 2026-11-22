@@ -1,0 +1,13 @@
+{% extends 'study/base.html' %}
+{% block title %}Confirm delete{% endblock %}
+{% block content %}
+<div class="card narrow">
+  <h2>Delete?</h2>
+  <p>Are you sure you want to delete <strong>{{ object }}</strong>?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn danger">Yes, delete</button>
+    <a href="{% url back %}" class="btn secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

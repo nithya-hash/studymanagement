@@ -1,0 +1,48 @@
+{% extends 'study/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Welcome, {{ user.username }}</h1>
+
+<div class="stats">
+  <div class="stat"><span>{{ subject_count }}</span>Subjects</div>
+  <div class="stat"><span>{{ pending }}</span>Pending tasks</div>
+  <div class="stat"><span>{{ completed }}</span>Completed</div>
+  <div class="stat danger"><span>{{ overdue }}</span>Overdue</div>
+</div>
+
+<div class="card">
+  <h3>Overall task progress: {{ progress }}%</h3>
+  <div class="bar"><div class="fill" style="width: {{ progress }}%"></div></div>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <h3>Upcoming tasks</h3>
+    {% for task in upcoming %}
+      <p><strong>{{ task.title }}</strong> <small>({{ task.subject.name }})</small><br>
+      <span class="muted">Due {{ task.due_date|date:"d M Y" }}</span></p>
+    {% empty %}
+      <p class="muted">No upcoming tasks. <a href="{% url 'task_add' %}">Add one</a></p>
+    {% endfor %}
+  </div>
+
+  <div class="card">
+    <h3>Today's schedule</h3>
+    {% for entry in todays_classes %}
+      <p>{{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }} &middot; {{ entry.subject.name }}</p>
+    {% empty %}
+      <p class="muted">Nothing scheduled today.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="card">
+  <h3>Weekly study plan vs target</h3>
+  {% for item in subject_progress %}
+    <p>{{ item.subject.name }} <small class="muted">{{ item.planned }} / {{ item.subject.target_hours }} hrs</small></p>
+    <div class="bar"><div class="fill" style="width: {{ item.percent }}%"></div></div>
+  {% empty %}
+    <p class="muted">Add subjects and timetable slots to see your plan.</p>
+  {% endfor %}
+</div>
+{% endblock %}
